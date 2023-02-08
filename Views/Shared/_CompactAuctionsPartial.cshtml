@@ -1,0 +1,29 @@
+﻿@using SuiteShared.DAL.Models
+
+@model List<Auction>
+
+@foreach (Auction auction in Model)
+{
+    <tr class="result-row">
+        <td>@auction.MinimumBid.ToString("C")</td>
+        <td>@auction.CurrentBid.ToString("C")</td>
+        <td>@auction.BidIncrement.ToString("C")</td>
+        <td>@auction.AuctionCloses.ToString("dd MMM HH:mm")</td>
+        <td>@auction.State</td>
+        <td>@auction.City</td>
+        <td class="fav-td">
+            <a class="btn btn-success cta-btn fav compact-fav" AuctionId="@auction.AuctionId"
+               link="@Url.Action("FavAuctionToggle", "Auctions")">
+                @if (((List<Guid>)ViewBag.favAuctions).Any(a => a == auction.AuctionId))
+                {
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                }
+                else
+                {
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                }
+            </a>
+        </td>
+    </tr>
+}
+

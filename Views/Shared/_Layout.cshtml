@@ -1,0 +1,200 @@
+﻿@using AuctionSite.DAL.Identity
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<AuctionUser> SignInManager
+@inject UserManager<AuctionUser> UserManager
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+    <title>Tsaishen</title>
+
+    <script src="~/js/jquery-3.3.1.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery-ui.min.js"></script>
+    <script src="~/js/overhang.min.js"></script>
+    <script src="~/js/bootstrap-slider.js"></script>
+    <script src="~/js/site.js"></script>
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js" id="mob_script"></script>*@
+    @*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
+    @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css" />
+    <link href="~/css/overhang.min.css" rel="stylesheet" />
+    <link href="~/css/bootstrap-slider.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" id="site" />
+    <link href="~/css/StyleSheet.css" rel="stylesheet" id="mobile" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" id="w3-mob">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+    @*<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />*@
+
+    <link rel="icon" type="image/x-icon" href="~/imgs/fav_logo.ico" src="" />
+</head>
+<body>
+
+    <nav class="navbar navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img width="150px" src="/imgs/logo.png" /></a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+
+                    <li id="phoneedu" style="display:none"><a class="btn big-login" style="font-family:sans-serif;font-weight:600;" href="#education">Education</a></li>
+                    <li id="phoneabtus" style="display:none"><a class="btn big-login" style="font-family:sans-serif;font-weight:600" href="#aboutus">About Us</a></li>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var usr = await UserManager.GetUserAsync(User);
+
+                        if (User != null)
+                        {
+                            <li class="btn big-login" style="font-family:sans-serif !important;font-weight:600;"><a asp-area="" asp-controller="Auctions" asp-action="Index">Auctions</a></li>
+                        }
+
+                    }
+                    @*<li><a asp-area="" asp-controller="Scrapper" asp-action="Index">Auctions Data</a></li>*@
+                </ul>
+                <partial name="_LoginPartial" />
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container body-content" style="width:100%;">
+        @RenderBody()
+    </div>
+    <div id="imgOverlay">
+        <img />
+    </div>
+    <div id="quickViewOverlay">
+        <div class="container-fluid body-content"></div>
+    </div>
+    <style>
+
+
+        .ftr {
+            text-align: center;
+            margin: 10px 0px 0px 0px;
+            background-color: white;
+        }
+    </style>
+
+    <div id="id01" class="w3-modal">
+        <div class="w3-modal-content">
+            <div class="w3-container">
+                <h4 class="w3-display-topleft">Register</h4>
+                <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <div class="error"></div>
+                <div class="form">
+                    <form method="" html="{:multipart=>true}" id="mob-reg" data-remote="true" action="" accept-charset="UTF-8">
+                        <input id="reg-email" class="form-control" type="text" placeholder="Email" name="email">
+                        <input id="reg-password" class="form-control" type="password" placeholder="Password" name="password">
+                        <input id="reg-password_confirmation" class="form-control" type="password" placeholder="Repeat Password" name="password_confirmation">
+                        <input class="btn btn-default btn-register cta-btn" type="button" value="Create account" name="commit" onclick="registerAjax('mob')">
+                    </form>
+                </div>
+                <div class="">
+                    <span>Already have an account?</span>
+                    <a href="#" onclick="document.getElementById('id02').style.display = 'block';document.getElementById('id01').style.display='none'">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="id02" class="w3-modal">
+        <div class="w3-modal-content">
+            <div class="w3-container">
+                <h4 class="w3-display-topleft">Login</h4>
+                <span onclick="document.getElementById('id02').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <div class="error"></div>
+                <div class="form ">
+                    <form method="" action="" id="mob-login" accept-charset="UTF-8">
+                        <input id="login-email-mob" class="form-control" type="text" placeholder="Email" name="email">
+                        <input id="login-password-mob" class="form-control" type="password" placeholder="Password" name="password">
+                        <input class="btn btn-default btn-login cta-btn" type="button" value="Login" onclick="loginAjax()">
+                    </form>
+                </div>
+                <div class="">
+                    <span>
+                        Looking to <a href="#" onclick="document.getElementById('id01').style.display = 'block';document.getElementById('id02').style.display='none'">create an account?</a>
+                        <br />
+                        <a href="#" onclick="document.getElementById('id04').style.display = 'block';document.getElementById('id02').style.display='none'">Forgot password?</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="id03" class="w3-modal">
+        <div class="w3-modal-content">
+            <div class="w3-container">
+                <h4 class="w3-display-topleft">Confirm code</h4>
+                <span onclick="document.getElementById('id03').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <div class="form">
+                    <form method="" action="" id="mob-confirm" accept-charset="UTF-8">
+                        <input id="confirm-email" class="form-control" type="text" placeholder="Email" name="email">
+                        <textarea id="confirm-code" class="form-control" style="margin-bottom: 10px; color: black;" placeholder="confirmation code" name="confirmation code" width="80%" rows="8"></textarea>
+                        <input class="btn btn-default btn-confirm cta-btn" type="button" value="confirm" onclick="confirmAjax()">
+                    </form>
+                </div>
+                <div class="">
+                    <span>Didn't receive code?</span>
+                    <a href="javascript: resendCode();">Resend code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="id04" class="w3-modal">
+        <div class="w3-modal-content">
+            <div class="w3-container">
+                <h4 class="w3-display-topleft">Send forget Password email</h4>
+                <span onclick="document.getElementById('id04').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <div class="form">
+                    <form method="" action="" id="mob-forget" accept-charset="UTF-8">
+                        <input id="forget-email" class="form-control" type="text" placeholder="Email" name="email">
+                        <input class="btn btn-default btn-forget cta-btn" type="button" value="Send email" onclick="forgotAjax()">
+                    </form>
+                </div>
+                <div class="">
+                    <span>Didn't receive code?</span>
+                    <a href="javascript: resendCode();">Resend code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="ftr">
+        <div class="container">
+            <div class="row">
+                <p class="center">The entirety of this site is protected by copyright © 2019-2020 Tsaishen.co.</p>
+            </div>
+            <div class="row">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-2 center"><a href="~/Home/Terms"><u>Terms</u></a></div>
+                <div class="col-sm-2 center"><a href="~/Home/PrivacyPolicy"><u>Privacy Policy</u></a></div>
+                <div class="col-sm-2 center"><a href="~/Home/IncomeDisclosure"><u>Income Disclosures</u></a></div>
+                <div class="col-sm-2 center"><a href="~/Home/Contact"><u>Contact Us</u></a></div>
+                <div class="col-sm-2 center"><a href="#"><u>Affiliates</u></a></div>
+                <div class="col-sm-1"></div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $('.navbar-nav>li>a').on('click', function () {
+            $('.navbar-collapse').collapse('hide');
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

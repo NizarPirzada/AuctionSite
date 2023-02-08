@@ -1,0 +1,32 @@
+﻿<p class="strong">pendingMigrations : </p>
+<div>
+    <ul>
+        @foreach (var pm in ViewBag.pendingMigrations)
+        {
+            <li>@pm</li>
+        }
+    </ul>
+</div>
+<br />
+<p class="strong">appliedMigrations : </p>
+<div>
+    <ul>
+        @foreach (var am in ViewBag.appliedMigrations)
+        {
+            <li>@am</li>
+        }
+    </ul>
+</div>
+<br />
+<p class="strong">getMigrations : </p>
+<div>
+    <ul>
+        @foreach (var gm in ViewBag.getMigrations)
+        {
+            <li>@gm</li>
+        }
+    </ul>
+</div>
+<br />
+<p><span class="strong">auction Count : </span>@ViewBag.auctionCount</p>
+<p><span class="strong">property documents Count: </span>@ViewBag.propertydocumentsCount</p>

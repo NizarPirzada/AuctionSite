@@ -1,0 +1,210 @@
+﻿@using Microsoft.AspNetCore.Identity.UI.Pages.Internal
+@using SuiteShared.DAL.Models
+
+@model List<Auction>
+
+@{int i = 1;}
+
+@foreach (Auction auction in Model)
+{
+
+    var imgUrl = (Url.Action("GetAuctionImage", "imgs", new { AuctionId = auction.AuctionId }, "https", (string)ViewBag.host));
+    var thumbUrl = (Url.Action("GetAuctionThumb", "imgs", new { AuctionId = auction.AuctionId }, "https", (string)ViewBag.host));
+    var quickViewUrl = (Url.Action("IndexPartial", "Auction", new { id = auction.AuctionId }, "https", (string)ViewBag.host));
+    <div class="row auction-row" auctionId="@auction.AuctionId">
+        <div class="col-md-2 col-lg-2 col-xs-2 col-sm-2" style="height: 100%; vertical-align: middle; display: flex; padding: 0;">
+            <div href='@thumbUrl' class="auctionimg" style='background-image: url("@imgUrl"); margin: auto; min-width: 133px; height: 100px; background-size: cover;'>
+                <div class="hint" style="display: none;">
+                    <i class="fa fa-2x fa-search-plus" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        <div class="auction-info-wrapper col-md-10 col-lg-10 col-xs-10 col-sm-10">
+            <h5><a target="_blank" href="@(Url.Action("index", "auction", new { id = auction.AuctionId }, "https", (string) ViewBag.host))">@(auction.AuctionTitle.Length > 62 ? auction.AuctionTitle.Substring(0, 62) + "..." : auction.AuctionTitle)</a></h5>
+            <div class="auction-time-left">Close at: @auction.AuctionCloses.ToString("dd MMM HH:mm")</div>
+            <div class="location">
+                <span class="strong">Location: </span>
+                @{
+                    if (auction.Address.Contains("\r\n"))
+                    {
+                        auction.Address = auction.Address.Replace("\r\n", " ");
+                    }
+                }
+
+                <a href="" id="addr@(i)" data-toggle="modal" onclick="map('@auction.Address');" data-target="#mapModel">@(auction.Address.Length > 70 ? auction.Address.Substring(0, 70) + "..." : auction.Address)</a>
+                @*<a href="" id="addr@(i)" data-toggle="modal" onclick="locate('@auction.Address');" data-target="#mapModel">@(auction.Address.Length > 70 ? auction.Address.Substring(0, 70) + "..." : auction.Address)</a>*@
+
+                <!-- Modal -->
+                <div class="modal fade" id="mapModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="padding: 5px 5px 5px 5px">
+                                <h5 class="modal-title" id="exampleModalLongTitle" style=" margin: 0 0 0 15px">Location</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <style>
+                                    #map-div {
+                                        height: 380px;
+                                        width: 480px;
+                                        background-color: #CCC;
+                                    }
+                                </style>
+                                <div id="map-div" style="height: 400px; width: 500px;">
+                                    <iframe id="mapframe" name="mapframe" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&q=" width="500" height="400" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="padding: 5px 5px 5px 5px">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Model End-->
+            </div>
+
+            <div class="bidsInfo">
+                <table>
+                    <tr>
+                        <td>Bids</td>
+                        <td><span class="strong">@auction.NumberOfBids</span></td>
+                    </tr>
+                    <tr>
+                        <td>Min. Bid</td>
+                        <td><span class="strong">@auction.MinimumBid.ToString("C")</span></td>
+                    </tr>
+                    <tr>
+                        <td>Current Bid</td>
+                        <td><span class="strong">@auction.CurrentBid.ToString("C")</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bid Increment</td>
+                        <td><span class="strong">@auction.BidIncrement.ToString("C")</span></td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="geo-info">
+                <table>
+                    <tr>
+                        <td style="width: 45px;"><span class="strong">State</span>: </td>
+                        <td style="width: 120px;">@auction.State</td>
+                        <td style="width: 40px;"><span class="strong">City</span>: </td>
+                        <td style="width: 120px;">@auction.City</td>
+                        @if (!string.IsNullOrEmpty(@auction.County))
+                        {
+                            <td style="width: 60px;"><span class="strong">County</span>: </td>
+                            <td>@auction.County</td>
+                        }
+                    </tr>
+                </table>
+
+            </div>
+            <div class="property-info">
+                <table>
+                    <tr>
+                        @if (!string.IsNullOrEmpty(auction.LotSize))
+                        {
+                            <td style="width: 100px;">Lot size:</td>
+                            <td style="width: 100px;">@auction.LotSize</td>
+                        }
+                        @if (auction.NumberOfBathrooms != 0 || auction.NumberOfBedrooms != 0)
+                        {
+                            <td>Bedrooms:</td>
+                            <td align="left">@auction.NumberOfBedrooms</td>
+                            <td>Bathrooms:</td>
+                            <td align="left">@auction.NumberOfBathrooms</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Annual Tax:</td>
+                        <td style="width:91px;" align="left">@auction.AnnualTaxes.ToString("C")</td>
+                        <td>Premium:</td>
+                        <td style="width:84px;" align="left">@(auction.BuyersPremium)%</td>
+                        @if (!string.IsNullOrEmpty(@auction.HOAFee))
+                        {
+                            <td>HOA Fee:</td>
+                            <td align="left">@auction.HOAFee</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td>Selling Price</td>
+                        <td><span class="strong">@auction.TotalAssessedValues.ToString("C")</span></td>
+                    </tr>
+                </table>
+            </div>
+            <a class="btn btn-success btn-xs btn-view-auction cta-btn" partial-link="@quickViewUrl">Auction Details</a>
+            <a target="_blank" class="btn btn-success btn-xs btn-bid-auction cta-btn" href="@auction.Link">Bid on it!</a>
+            <a class="btn btn-success cta-btn fav btn-fav-auction" AuctionId="@auction.AuctionId"
+               link="@Url.Action("FavAuctionToggle", "Auctions", new { AuctionId = auction.AuctionId })">
+                @if (((List<Guid>)ViewBag.favAuctions).Any(a => a == auction.AuctionId))
+                {
+                    <i class="fa fa-heart" aria-hidden="true"></i>
+                }
+                else
+                {
+                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                }
+            </a>
+        </div>
+    </div>
+    {
+        i++;
+    }
+
+}
+
+<script>
+
+    function map(id) {
+        var url = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&q=' + id;
+        $("#mapframe").attr('src', url);
+    }
+
+</script>
+
+@*<script>
+        var geocoder;
+        var map;
+        var address = "new york city";
+        var loc = "new york";
+
+        function locate(addr) {
+            loc = addr;
+            alert(loc);
+            initMap();
+
+        }
+
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map-div'), {
+                zoom: 8,
+                center: { lat: -34.397, lng: 150.644 }
+            });
+            geocoder = new google.maps.Geocoder();
+            codeAddress(geocoder, map);
+        }
+
+        function codeAddress(geocoder, map) {
+            geocoder.geocode({ 'address': loc }, function (results, status) {
+                if (status === 'OK') {
+                    map.setCenter(results[0].geometry.location);
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location
+                    });
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&callback=initMap">
+    </script>*@
+
+

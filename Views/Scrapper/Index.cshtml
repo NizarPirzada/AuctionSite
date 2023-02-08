@@ -1,0 +1,112 @@
+﻿@model IEnumerable<SuiteShared.DAL.Models.Auction>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Auctions Data</h4>
+    <div>
+        <br />
+        <table class="table table-striped  table-hover table-bordered" id="allAuction">
+            <thead>
+                <tr>
+                    <th>
+                        Auction ID
+                    </th>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        City
+                    </th>
+                    <th>
+                        State
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int i = 0;}
+                @foreach (var item in Model)
+                {
+
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SourceAuctionId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AuctionTitle)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.City)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.State)
+                        </td>
+                        <td>
+                            <a href="" id="addr@(i)" data-toggle="modal" onclick="map(@i);" data-target="#mapModel">@Html.DisplayFor(modelItem => item.Address)</a>
+                        </td>
+                    </tr>
+                    
+                    {
+                        i++;
+                    }
+
+                }
+            </tbody>
+        </table>
+        <br />
+       
+        <br />
+        <!-- Modal -->
+        <div class="modal fade" id="mapModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="padding: 5px 5px 5px 5px">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Location</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <style>
+                            #map-div {
+                                height: 380px;
+                                width: 480px;
+                                background-color: #CCC;
+                            }
+                        </style>
+                        <div id="map-div" style="height: 400px; width: 500px;">
+                            @*<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d104703.78284428397!2d-110.24326394916693!3d34.90661980958424!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872fa8161db2d857%3A0x550fb4980e35323c!2sHolbrook%2C%20AZ%2086025%2C%20USA!5e0!3m2!1sen!2s!4v1575617101226!5m2!1sen!2s" width="500" height="400" frameborder="0" style="border:0;" allowfullscreen=""></iframe>*@
+                            <iframe id="mapframe" name="mapframe" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&q=NewYark" width="500" height="400" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="padding: 5px 5px 5px 5px">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+
+<script>
+    
+    $(document).ready(function () {
+        $('#allAuction').DataTable();
+    });
+
+    function map(id) {
+        var address = $("#addr" + id).text();
+        var url = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&q=' + address;
+        
+        $("#mapframe").attr('src', url);
+    }
+</script>
+
+
+

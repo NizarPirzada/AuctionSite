@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Contact";
+}
+
+
+<div class="container-fluid margin-contain">
+
+    <h2>@ViewData["Title"]</h2>
+
+    <div class=" row">
+        <div class="col-md-4">
+            <address>
+                One Microsoft Way<br />
+                Redmond, WA 98052-6399<br />
+                @*<span class="glyphicon glyphicon-earphone"></span>*@
+                <abbr title="Phone">  P:</abbr>
+                425.555.0100
+            </address>
+
+            <address>
+                <strong>  Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
+                @*<span class="glyphicon glyphicon-envelope"></span>*@
+                <strong>  Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
+            </address>
+        </div>
+
+        <div class="col-md-8 row">
+
+            <div class="col-md-2"><label>Name<span id="lblname" style="color:red;"></span></label></div>
+            <div class="col-md-10"><input id="name" class="form-control" style="margin-bottom:5px;" placeholder="Enter Name"/></div>
+
+            <div class="col-md-2"><label>Email<span id="lblemail" style="color:red;"></span></label></div>
+            <div class="col-md-10"><input id="email" class="form-control" style="margin-bottom:5px;" placeholder="Enter email"/></div>
+            <div class="col-md-2"><label>Message<span id="lblmsg" style="color:red;"></span></label></div>
+            <div class="col-md-10"><textarea id="msg" class="form-control" style="height:150px; margin-bottom:5px;" placeholder="Enter message"></textarea></div>
+
+            <div>
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-10">
+                <div class="g-recaptcha" data-sitekey="6Lc7x78UAAAAAG_K_wug6oD-qQLbaVwUA1dmYf58" data-callback="recaptchaCallback" style="margin-bottom:5px;"></div>
+            </div>
+            </div>
+
+            <div id="captcha">
+                <br />
+                <div class="col-md-2"></div>
+                <div class="col-md-10">
+                    <button id="submit" class="btn btn-success cta cta-btn" style="margin: 0px 0px 0px 0px;" value="Submit" onclick="dataSubmit()" disabled>Submit</button>
+                </div>
+
+            </div>
+            <br />
+            <br />
+        </div>
+    </div>
+</div>
+
+
+<script src="https://www.google.com/recaptcha/api.js"></script>
+
+<script>
+    function recaptchaCallback() {
+        $('#submit').removeAttr('disabled');
+    };
+
+    function dataSubmit() {
+        var name = $("#name").val();
+        var subj = "Email From: " + name;
+        var email = $("#email").val();
+        var message = $("#msg").val();
+
+        $('#submit').attr("disabled", true);
+
+        //var mydata = {
+        //    recipent: "tsaishenco@gmail.com",
+        //    subject: subj,
+        //    sender: email,
+        //    body: message
+        //}
+
+        if (name != null && name != "" && email != null && email != "" && message != null && message != "") {
+            var myurl = "/Home/QueryEmail?subject=" + subj + "&sender=" + email + "&body=" + message;
+
+            $.ajax({
+                type: "GET",
+                url: myurl,
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(),
+
+                success: function (result) {
+                    if (result != null) {
+                        alert('Email Sent!');
+                        $('#submit').removeAttr('disabled');
+                    } else {
+                        alert('Email Not Sent!');
+                    }
+                },
+                error: function (response) {
+                    alert('error!');
+                }
+            });
+        } else {
+            if (name == null || name == "") {
+                $("#lblname").text('*');
+            } else {
+                $("#lblname").text('');
+            }
+            if (email == null || email == "") {
+                $("#lblemail").text('*');
+            } else {
+                $("#lblemail").text('');
+            }
+            if (message == null || message == "") {
+                $("#lblmsg").text('*');
+            } else {
+                $("#lblmsg").text('');
+            }
+        }
+    }
+</script>

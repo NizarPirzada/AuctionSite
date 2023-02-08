@@ -1,0 +1,119 @@
+﻿@using AuctionSite.DAL.Identity
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AuctionUser> SignInManager
+@inject UserManager<AuctionUser> UserManager
+@if (SignInManager.IsSignedIn(User))
+{
+    var usr = await UserManager.GetUserAsync(User);
+    var name = !string.IsNullOrEmpty(usr.FullName) ?
+        usr.FullName :
+        (UserManager.GetUserName(User).Contains("@") ?
+            UserManager.GetUserName(User).Split('@')[0] :
+            UserManager.GetUserName(User));
+    <form asp-controller="auth" asp-action="Logout" method="get" id="logoutForm" class="navbar-right">
+        <ul class="nav navbar-nav navbar-right" style="font-family:sans-serif;font-weight:600">
+            <li class="btn big-login" style="font-family:sans-serif !important;font-weight:600;">
+                <a asp-controller="Account" asp-action="Manage" title="Manage">Hello @name!</a>
+            </li>
+            <li class="btn big-login" style="font-family:sans-serif !important;font-weight:600;">
+                <button type="submit" class="btn btn-link navbar-btn navbar-link">Logout</button>
+            </li>
+        </ul>
+    </form>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right" id="full_display">
+        <li>
+            <a class="btn big-register cta-btn" style="font-weight: 700; padding-bottom: 10px;
+                                      padding-top: 10px; margin-top:5px; font-family:sans-serif"
+               data-toggle="modal" href="javascript:void(0)" onclick="openRegisterModal();">Register Today!</a>
+        </li>
+        <li><a class="btn big-login" style="font-family:sans-serif;font-weight:600" data-toggle="modal" href="javascript:void(0)" onclick="openLoginModal();">Login</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right" id="mobile_display">
+        <li>
+            <a class="btn big-register cta-btn" style="font-weight: 700; padding-bottom: 10px;
+                                      padding-top: 10px; margin-top:5px; font-family:sans-serif"
+               href="#" onclick="document.getElementById('id01').style.display='block'" >Register Today!</a>
+        </li>
+        <li><a class="btn big-login" style="font-family:sans-serif;font-weight:600" data-toggle="modal" href="#" onclick="document.getElementById('id02').style.display='block'">Login</a></li>
+    </ul>
+}
+
+<div class="modal fade login" id="loginModal">
+    <div class="modal-dialog login animated">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Login</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box">
+                    <div class="content">
+                        <div class="error"></div>
+                        <div class="form loginBox">
+                            <form method="" action="" id="big-login" accept-charset="UTF-8">
+                                <input id="login-email" class="form-control" type="text" placeholder="Email" name="email">
+                                <input id="login-password" class="form-control" type="password" placeholder="Password" name="password">
+                                <input class="btn btn-default btn-login cta-btn" type="button" value="Login" onclick="loginAjax()">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="content registerBox" style="display:none;">
+                        <div class="form">
+                            <form method="" html="{:multipart=>true}" id="big-reg" data-remote="true" action="" accept-charset="UTF-8">
+                                <input id="reg-email" class="form-control" type="text" placeholder="Email" name="email">
+                                <input id="reg-password" class="form-control" type="password" placeholder="Password" name="password">
+                                <input id="reg-password_confirmation" class="form-control" type="password" placeholder="Repeat Password" name="password_confirmation">
+                                <input class="btn btn-default btn-register cta-btn" type="button" value="Create account" name="commit" onclick="registerAjax()">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="content confirmBox" style="display:none;">
+                        <div class="form">
+                            <form method="" action="" id="big-confirm" accept-charset="UTF-8">
+                                <input id="confirm-email" class="form-control" type="text" placeholder="Email" name="email">
+                                <textarea id="confirm-code" class="form-control" style="margin-bottom: 10px; color: black;" placeholder="confirmation code" name="confirmation code" width="80%" rows="8"></textarea>
+                                <input class="btn btn-default btn-confirm cta-btn" type="button" value="confirm" onclick="confirmAjax()">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="content forgetBox" style="display:none;">
+                        <div class="form">
+                            <form method="" action="" id="big-forget" accept-charset="UTF-8">
+                                <input id="forget-email" class="form-control" type="text" placeholder="Email" name="email">
+                                <input class="btn btn-default btn-forget cta-btn" type="button" value="Send email" onclick="forgotAjax()">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="forgot login-footer">
+                    <span>
+                        Looking to <a href="javascript: showRegisterForm();">create an account?</a>
+                        <br />
+                        <a href="javascript: showForgetForm();">Forgot password?</a>
+                    </span>
+                </div>
+                <div class="forgot register-footer" style="display:none">
+                    <span>Already have an account?</span>
+                    <a href="javascript: showLoginForm();">Login</a>
+                </div>
+                <div class="forgot resend-footer" style="display:none">
+                    <span>Didn't receive code?</span>
+                    <a href="javascript: resendCode();">Resend code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

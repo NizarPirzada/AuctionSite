@@ -1,0 +1,564 @@
+﻿@using SuiteShared.DAL.Enums
+@using SuiteShared.DAL.Models
+@model List<Auction>
+
+<style>
+    @@media (min-width: 1200px) {
+
+        .col-lg-9 {
+            width: 74%;
+            margin-left: 26%;
+        }
+
+        .col-lg-11 {
+            width: 91.66666667%;
+            margin-left: 8%;
+        }
+
+        .col-lg-1 {
+            width: 7.66666%;
+        }
+
+        .side_margin {
+            margin-right: 10px;
+        }
+    }
+
+    #usd_side {
+        position: fixed;
+        margin-left: 80px;
+        z-index: 10;
+        margin-top: 0px;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 5px 5px 3px #888888;
+        background-color: white;
+    }
+
+    #fav_side {
+        position: fixed;
+        margin-left: 80px;
+        z-index: 10;
+        margin-top: 10px;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 5px 5px 3px #888888;
+        background-color: white;
+    }
+
+    #user_side {
+        position: fixed;
+        margin-left: 80px;
+        z-index: 10;
+        margin-top: 190px;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 5px 5px 3px #888888;
+        background-color: white;
+    }
+
+    #type_side {
+        position: fixed;
+        margin-left: 80px;
+        z-index: 10;
+        margin-top: 100px;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 5px 5px 3px #888888;
+        background-color: white;
+    }
+    #loc_side {
+        position: fixed;
+        margin-left: 80px;
+        z-index: 10;
+        margin-top: 100px;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 5px 5px 3px #888888;
+        background-color: white;
+        height: 100%;
+    }
+
+    .curr_btn_cs{
+        left: -80px !important;
+        margin-top: 70px !important;
+    }
+</style>
+
+<div class="row">
+    <div id="sidebar" class="filters col-md-3 col-lg-3 col-xs-3 col-sm-3">
+        <div class="filters-content">
+            <a id="arrow" onclick="slidebar()" style="position:absolute; margin-left:230px">  <i class="fa fa-angle-double-left"></i></a>
+            <div id="narrow_bar" style="position: relative;display:none;">
+                <a href="#" tabindex="0">
+                    <i class="fa fa-filter"></i>
+                </a>
+
+                <hr />
+
+                <a  href="#" onclick="fav_side()" tabindex="0"><i class="fa fa-heart"></i></a>
+
+                <hr />
+
+                <a  href="#" tabindex="0" onclick="usd_side()"><i class="fa fa-usd"></i></a>
+
+
+
+                <hr />
+
+                <a href="#" onclick="type_side()" tabindex="0"><i class="fa fa-home" aria-hidden="true"></i></a>
+
+
+                <hr />
+
+                <a href="#" onclick="user_side()" tabindex="0"><i class="fa fa-user" aria-hidden="true"></i></a>
+
+
+                <hr />
+
+
+                <a href="#" onclick="loc_side()" tabindex="0"><i class="fa fa-map-marker" aria-hidden="true"></i></a>
+
+
+
+                <hr />
+
+                <a onclick="slidebar_invert()">  <i class="fa fa-angle-double-right"></i></a>
+
+            </div>
+
+
+
+            <div id="full_bar">
+                <h3 style="text-align: center; margin-top: 0px; color: #000070"><b> <i class="fa fa-filter"></i>Filter By</b></h3>
+                <div id="fav-wrapper" class="filter-wrapper">
+                    <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#fav-filter"><i class="fa fa-heart side_margin"></i>Favorites filter</a>
+                    <div id="fav-filter" class="favfilter collapse in">
+                        <div style="display: inline-block;">Show Favorites only</div>
+                        <a class="btn btn-success cta-btn fav filter-fav" onclick="changeFavFilter($(this))">
+                            @if (ViewBag.favonly)
+                            {
+                                <i class="fa fa-heart" aria-hidden="true"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-heart-o" aria-hidden="true"></i>
+                            }
+                        </a>
+                    </div>
+                </div>
+                <div id="currentbid-wrapper" class="filter-wrapper">
+                    <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#currentbid-filter"><i class="fa fa-usd side_margin"></i>Current Bid Range</a>
+
+                    <div id="currentbid-filter" class="pricefilter collapse in">
+                        <br />
+                        <div id="pricefilter-min-wrapper" class="min-wrapper">
+                            <p>From</p>
+                            <input type="number" class="form-control currentbid-filter-min" placeholder="min" value="@ViewBag.cbmin">
+                        </div>
+                        <div id="pricefilter-max-wrapper" class="max-wrapper">
+                            <p>To</p>
+                            <input type="number" class="form-control currentbid-filter-max" placeholder="max" value="@ViewBag.cbmax">
+                        </div>
+                        <input id="currentbid-filter-slider" type="text" class="span2" value="" data-slider-step="100"
+                               data-slider-min="@ViewBag.minCurrentbid"
+                               data-slider-max="@ViewBag.maxCurrentbid"
+                               data-slider-value="[@ViewBag.cbmin,@ViewBag.cbmax]" />
+                        <a id="curr_btn" class="btn btn-primary" onclick="applyFilters()">Apply</a>
+                    </div>
+
+                </div>
+                <div id="minbid-wrapper" class="filter-wrapper">
+                    <a id="btn_title" class="filter-collapse" href="#" data-toggle="collapse" data-target="#minbid-filter"><i class="fa fa-usd side_margin"></i>Min Bid Range</a>
+
+                    <div id="minbid-filter" class="pricefilter collapse in">
+                        <br />
+                        <div id="pricefilter-min-wrapper" class="min-wrapper">
+                            <p>From</p>
+                            <input type="number" class="form-control minbid-filter-min" placeholder="min" value="@ViewBag.mbmin">
+                        </div>
+                        <div id="pricefilter-max-wrapper" class="max-wrapper">
+                            <p>To</p>
+                            <input type="number" class="form-control minbid-filter-max" placeholder="max" value="@ViewBag.mbmax">
+                        </div>
+                        <input id="minbid-filter-slider" type="text" class="span2" value="" data-slider-step="100"
+                               data-slider-min="@ViewBag.minMbid"
+                               data-slider-max="@ViewBag.maxMbid"
+                               data-slider-value="[@ViewBag.mbmin,@ViewBag.mbmax]" />
+                        <a id="min_btn" class="btn btn-primary" onclick="applyFilters()">Apply</a>
+                    </div>
+                </div>
+                <div id="property-wrapper" class="filter-wrapper">
+                    <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#property-filter"><i class="fa fa-home side_margin" aria-hidden="true"></i>Property type</a>
+                    <br />
+                    <div id="property-filter" class="collapse in">
+                        @foreach (var property in ViewBag.propertyType)
+                        {
+                            if (property.Count == 0)
+                            {
+                                continue;
+                            }
+                            <label class="property-checkbox-container checkbox-container" state="@property.Name">
+                                @($"{property.Name} ({property.Count})")
+                                <input type="checkbox" @(property.Filtered ? "checked" : string.Empty)>
+                                <span class="checkmark"></span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div id="seller-wrapper" class="filter-wrapper">
+                    <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#seller-filter"><i class="fa fa-user side_margin" aria-hidden="true"></i>Seller</a>
+                    <br />
+                    <div id="seller-filter" class="collapse in">
+                        @foreach (var seller in ViewBag.sellerType)
+                        {
+                            if (seller.Count == 0)
+                            {
+                                continue;
+                            }
+                            <label class="seller-checkbox-container checkbox-container" state="@seller.Name">
+                                @($"{seller.Name} ({seller.Count})")
+                                <input type="checkbox" @(seller.Filtered ? "checked" : string.Empty)>
+                                <span class="checkmark"></span>
+                            </label>
+                        }
+                    </div>
+                </div>
+                <div id="state-wrapper" class="filter-wrapper" style="margin-bottom:30px !important">
+                    <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#state-filter"><i class="fa fa-map-marker side_margin" aria-hidden="true"></i>Location</a>
+                    <br />
+                    <input type="text" id="filter-tb" class="form-control" aria-label="" placeholder="Enter State">
+                    <br />
+                    <div id="state-filter" class="collapse in">
+                        @foreach (var stateWithCount in ViewBag.states)
+                        {
+                            <label class="state-checkbox-container checkbox-container" state="@stateWithCount.StateName">
+                                @($"{stateWithCount.StateName} ({stateWithCount.Count})")
+                                <input type="checkbox" @(stateWithCount.Filtered ? "checked" : string.Empty)>
+                                <span class="checkmark"></span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fav_side" style="display:none" class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+        <div id="fav_data">
+            <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#fav-filter"><i class="fa fa-heart side_margin"></i>Favorites filter</a>
+            <br />
+        </div>
+    </div>
+
+    <div id="usd_side" style="display:none" class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+        <div id="usd_data">
+            <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#currentbid-filter"><i class="fa fa-usd side_margin"></i>Current Bid Range</a>
+           
+        </div>
+    </div>
+
+    <div id="user_side" style="display:none" class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+        <div id="user_data">
+            <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#seller-filter"><i class="fa fa-user side_margin" aria-hidden="true"></i>Seller</a>
+            <br />
+        </div>
+    </div>
+
+    <div id="type_side" style="display:none" class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+        <div id="type_data">
+            <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#property-filter"><i class="fa fa-home side_margin" aria-hidden="true"></i>Property type</a>
+            <br />
+        </div>
+    </div>
+
+    <div id="loc_side" style="display:none" class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+        <div id="loc_data">
+            <a class="filter-collapse" href="#" data-toggle="collapse" data-target="#state-filter"><i class="fa fa-map-marker side_margin" aria-hidden="true"></i>Location</a>
+            <br />
+        </div>
+    </div>
+
+    <div id="main" class="results col-md-9 col-lg-9 col-xs-9 col-sm-9">
+
+        <div role="presentation" class="dropdown">
+            <div class="rf">Open Results found: @ViewBag.resultsFound</div>
+
+            <div class="dropdown-wrapper">
+                <a href="#" class="dropdown-toggle btn btn-outline-primary" id="drop6" data-toggle="dropdown"
+                   role="button" aria-haspopup="true" aria-expanded="false">Sort by<span class="caret"></span></a>
+                <ul class="dropdown-menu" id="menu3" aria-labelledby="drop6">
+                    <li><a sortkey="bm" onclick="applyFilters('bm',     $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "bm" ? "selected" : string.Empty)" href="#">Best Match</a></li>
+                    <li><a sortkey="mbhl" onclick="applyFilters('mbhl', $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "mbhl" ? "selected" : string.Empty)" href="#">Min. Bid: High to Low</a></li>
+                    <li><a sortkey="mblh" onclick="applyFilters('mblh', $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "mblh" ? "selected" : string.Empty)" href="#">Min. Bid: Low to High</a></li>
+                    <li><a sortkey="cbhl" onclick="applyFilters('cbhl', $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "cbhl" ? "selected" : string.Empty)" href="#">Current Bid: High to Low</a></li>
+                    <li><a sortkey="cblh" onclick="applyFilters('cblh', $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "cblh" ? "selected" : string.Empty)" href="#">Current Bid: Low to High</a></li>
+                    <li><a sortkey="cthl" onclick="applyFilters('cthl', $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "cthl" ? "selected" : string.Empty)" href="#">Close Time: Latest to Soonest</a></li>
+                    <li><a sortkey="ctlh" onclick="applyFilters('ctlh', $('#drop7').siblings().find('li a.selected').attr('displaykey'))" class="sort-btn @(ViewBag.sort == "ctlh" ? "selected" : string.Empty)" href="#">Close Time: Soonest to Latest</a></li>
+                </ul>
+            </div>
+            <div class="dropdown-wrapper2">
+                <a href="#" class="dropdown-toggle btn btn-outline-primary" id="drop7" data-toggle="dropdown"
+                   role="button" aria-haspopup="true" aria-expanded="false">Display style<span class="caret"></span></a>
+                <ul class="dropdown-menu" aria-labelledby="drop7">
+                    <li><a displaykey="Comfortable" onclick="applyFilters($('#drop6').siblings().find('li a.selected').attr('sortkey'), 'Comfortable')" class="sort-btn @(ViewBag.denisty == "Comfortable" ? "selected" : string.Empty)" href="#">Display: Comfortable</a></li>
+                    <li><a displaykey="Compact" onclick="applyFilters($('#drop6').siblings().find('li a.selected').attr('sortkey'), 'Compact')" class="sort-btn @(ViewBag.denisty == "Compact" ? "selected" : string.Empty)" href="#">Display: Compact</a></li>
+                </ul>
+            </div>
+        </div>
+        @if (ViewBag.denisty == "Comfortable")
+        {
+            <partial name="_AuctionsPartial" />
+        }
+        else
+        {
+            <div class="row auction-row" style="height: auto;">
+                <table class="table">
+                    <thead>
+                        <tr style="font-weight: 500">
+                            <td style="width: 110px;">Min Bid</td>
+                            <td style="width: 110px;">Current Bid</td>
+                            <td style="width: 110px;">Bid Increment</td>
+                            <td style="width: 110px;">Close Date</td>
+                            <td style="width: 110px;">State</td>
+                            <td style="width: 110px;">City</td>
+                            <td>Favorite</td>
+                        </tr>
+                    </thead>
+                    <tbody class="results-table">
+                        <partial name="_CompactAuctionsPartial" />
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $("#filter-tb").keyup(function () {
+        var state = $("#filter-tb").val();
+        if (state.length > -1) {
+            var myurl = "/Auctions/GetFilterStates?state=" + state;
+            var items = ""; 
+            $.get(myurl, function (data, status) {
+                $.each(data, function (item, value) {
+                    if (value.filtered == true) {
+                        items += "<label class='state-checkbox-container checkbox-container' state='" + value.stateName + "'>" + value.stateName + " (" + value.count + ")<input type='checkbox' checked><span class='checkmark'></span></label>";
+                        if (item == 1) {
+                        }
+                    } else {
+                        items += "<label class='state-checkbox-container checkbox-container' state='" + value.stateName + "'>" + value.stateName + " (" + value.count + ")<input type='checkbox'><span class='checkmark'></span></label>";
+                    }
+                });
+                //$("#state-filter").html("");
+                $("#state-filter").html(items);
+            });
+        }
+    });
+
+
+    //$("#filter-tb").keyup(function () {
+    //    var state = $("#filter-tb").val();
+    //    if (state != "" && state != null) {
+    //        $("#filter-tb").autocomplete({
+    //            source: '/Auctions/SearchState?state=' + state,
+    //        })
+    //    }
+    //});
+
+    //$('#filter-tb').on('autocompleteselect', function (event, ui) {
+    //    $('#filter-tb').bind("enterKey", function (e) {
+    //        alert("Enter key pressed");
+    //    });
+    //});
+
+    function slidebar() {
+        $('#narrow_bar').show()
+        $('#full_bar').hide()
+        $('#arrow').hide()
+        $("#sidebar").removeClass("col-md-3");
+        $("#sidebar").removeClass("col-sm-3");
+        $("#sidebar").removeClass("col-lg-3");
+        $("#sidebar").removeClass("col-xs-3");
+        $("#sidebar").addClass("col-md-1");
+        $("#sidebar").addClass("col-sm-1");
+        $("#sidebar").addClass("col-lg-1");
+        $("#sidebar").addClass("col-xs-1");
+
+        $("#main").removeClass("col-md-9");
+        $("#main").removeClass("col-sm-9");
+        $("#main").removeClass("col-lg-9");
+        $("#main").removeClass("col-xs-9");
+        $("#main").addClass("col-md-11");
+        $("#main").addClass("col-sm-11");
+        $("#main").addClass("col-lg-11");
+        $("#main").addClass("col-xs-11");
+
+        //$("#fav-filter").appendTo("#heart");
+        //$("#currentbid-filter").appendTo("#bid");
+
+        //document.getElementById('heart').appendChild(
+        //    document.getElementById('fav-filter'));
+
+        //document.getElementById('bid').appendChild(
+        //    document.getElementById('currentbid-filter'));
+
+        //document.getElementById('bid').appendChild(
+        //    document.getElementById('minbid-filter'));
+
+        //document.getElementById('type').appendChild(
+        //    document.getElementById('property-filter'));
+
+        //document.getElementById('user').appendChild(
+        //    document.getElementById('seller-filter'));
+
+        //document.getElementById('location').appendChild(
+        //    document.getElementById('state-filter'));
+    }
+
+    function slidebar_invert() {
+
+        $('#curr_btn').removeClass('curr_btn_cs');
+        $('#min_btn').removeClass('curr_btn_cs');
+
+        $('#type_side').hide()
+        $('#loc_side').hide()
+        $('#user_side').hide()
+        $('#fav_side').hide()
+        $('#usd_side').hide()
+
+        $('#narrow_bar').hide()
+        $('#full_bar').show()
+        $('#arrow').show()
+
+        $("#sidebar").removeClass("col-md-1");
+        $("#sidebar").removeClass("col-sm-1");
+        $("#sidebar").removeClass("col-lg-1");
+        $("#sidebar").removeClass("col-xs-1");
+
+        $("#sidebar").addClass("col-md-3");
+        $("#sidebar").addClass("col-sm-3");
+        $("#sidebar").addClass("col-lg-3");
+        $("#sidebar").addClass("col-xs-3");
+
+        $("#main").removeClass("col-md-11");
+        $("#main").removeClass("col-sm-11");
+        $("#main").removeClass("col-lg-11");
+        $("#main").removeClass("col-xs-11");
+
+        $("#main").addClass("col-md-9");
+        $("#main").addClass("col-sm-9");
+        $("#main").addClass("col-lg-9");
+        $("#main").addClass("col-xs-9");
+
+        //$("#fav-filter").appendTo("#fav-wrapper");
+        //$("#currentbid-filter").appendTo("#currentbid-wrapper");
+
+        document.getElementById('fav-wrapper').appendChild(
+            document.getElementById('fav-filter'));
+
+        document.getElementById('currentbid-wrapper').appendChild(
+            document.getElementById('currentbid-filter'));
+        document.getElementById('minbid-wrapper').appendChild(
+            document.getElementById('btn_title'));
+        document.getElementById('minbid-wrapper').appendChild(
+            document.getElementById('minbid-filter'));
+
+        document.getElementById('property-wrapper').appendChild(
+            document.getElementById('property-filter'));
+
+        document.getElementById('seller-wrapper').appendChild(
+            document.getElementById('seller-filter'));
+
+        document.getElementById('state-wrapper').appendChild(
+            document.getElementById('state-filter'));
+       
+    }
+
+    function usd_side() {
+
+        $('#curr_btn').addClass('curr_btn_cs');
+        $('#min_btn').addClass('curr_btn_cs');
+        $('#type_side').hide()
+        $('#loc_side').hide()
+        $('#user_side').hide()
+        $('#fav_side').hide()
+        $('#usd_side').show()
+
+        document.getElementById('usd_data').appendChild(
+            document.getElementById('currentbid-filter'));
+        document.getElementById('usd_data').appendChild(
+            document.getElementById('btn_title'));
+        document.getElementById('usd_data').appendChild(
+            document.getElementById('minbid-filter'));
+    }
+
+    function fav_side() {
+        $('#type_side').hide()
+        $('#loc_side').hide()
+        $('#user_side').hide()
+        $('#fav_side').show()
+        $('#usd_side').hide()
+
+        document.getElementById('fav_data').appendChild(
+            document.getElementById('fav-filter'));
+    }
+
+    function user_side() {
+        $('#user_side').show()
+        $('#type_side').hide()
+        $('#loc_side').hide()
+        $('#fav_side').hide()
+        $('#usd_side').hide()
+        document.getElementById('user_data').appendChild(
+            document.getElementById('seller-filter'));
+    }
+
+    function type_side() {
+        $('#type_side').show()
+        $('#loc_side').hide()
+        $('#user_side').hide()
+        $('#fav_side').hide()
+        $('#usd_side').hide()
+
+        document.getElementById('type_data').appendChild(
+            document.getElementById('property-filter'));
+    }
+
+    function loc_side() {
+        $('#type_side').hide()
+        $('#loc_side').show()
+        $('#user_side').hide()
+        $('#fav_side').hide()
+        $('#usd_side').hide()
+
+        document.getElementById('loc_data').appendChild(
+            document.getElementById('state-filter'));
+    }
+
+
+    $(document).mouseup(function (e) {
+        var type_container = $("#type_side");
+        var fav_container = $("#fav_side");
+        var usd_container = $("#usd_side");
+        var loc_container = $("#loc_side");
+        var user_container = $("#user_side");
+        // if the target of the click isn't the container nor a descendant of the container
+        if (!type_container.is(e.target) && type_container.has(e.target).length === 0) {
+            type_container.hide();
+        }
+        if (!fav_container.is(e.target) && fav_container.has(e.target).length === 0) {
+            fav_container.hide();
+        }
+        if (!usd_container.is(e.target) && usd_container.has(e.target).length === 0) {
+            usd_container.hide();
+        }
+        if (!loc_container.is(e.target) && loc_container.has(e.target).length === 0) {
+            loc_container.hide();
+        }
+        if (!user_container.is(e.target) && user_container.has(e.target).length === 0) {
+            user_container.hide();
+        }
+    });
+</script>

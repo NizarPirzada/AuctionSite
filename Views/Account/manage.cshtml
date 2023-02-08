@@ -1,0 +1,71 @@
+﻿@using AuctionSite.DAL.Identity
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<AuctionUser> SignInManager
+@inject UserManager<AuctionUser> UserManager
+
+@{
+    var usr = await UserManager.GetUserAsync(User);
+}
+
+<table id="account-manage" class="table">
+    @if (!string.IsNullOrEmpty(usr.FullName))
+    {
+        <tr>
+            <td>Name</td>
+            <td>@usr.FullName</td>
+        </tr>
+    }
+    <tr>
+        <td>Email</td>
+        <td>@usr.Email</td>
+    </tr>
+    <tr>
+        <td>Subscription</td>
+        @if (usr.SubscribedAt == default(DateTime))
+        {
+            <td style="color: #174067;">
+                <h3>Start Your FREE 14 Day Trial Now!</h3>
+                <h1>No contracts, ever. Cancel your account anytime with a single click</h1>
+                <br /><br />
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="JD7Y7TQ7QQMA4">
+                    <input type="hidden" name="custom" value="@usr.Email" />
+                    <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                </form>
+            </td>
+        }
+        else
+        {
+            <td>
+                Subscribed since @usr.SubscribedAt
+                <br />
+                <br />
+                Free Trail ends at @usr.SubscribedAt.AddDays(14)
+                <br />
+                <br />
+                <a class="btn btn-primary cta-btn" href="https://www.paypal.com/li/smarthelp/article/how-do-i-cancel-a-recurring-payment,-subscription,-or-automatic-billing-agreement-i-have-with-a-merchant-faq1067">Cancel now</a>
+            </td>
+        }
+    </tr>
+    @if (usr.SubscribedAt != default(DateTime))
+    {
+        <tr>
+            <td>Subscription Status</td>
+            <td>@(usr.SubscriptionConfirmed ? "Confirmed" : "Pending Paypal final confirmation")</td>
+        </tr>
+    }
+    <tr>
+        <td rowspan="3">Change Password</td>
+        <td rowspan="3" id="changePasswordWrapper">
+            <form asp-antiforgery="true">
+                <input id="current-password" class="form-control" type="password" placeholder="Current Password">
+                <input id="new-password" class="form-control" type="password" placeholder="New Password">
+                <input id="new-password-confirm" class="form-control" type="password" placeholder="Confirm New Password">
+                <input class="btn btn-default btn-login" type="button" value="Change Password" onclick="changePassword()">
+            </form>
+        </td>
+    </tr>
+</table>

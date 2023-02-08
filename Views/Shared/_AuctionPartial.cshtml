@@ -1,0 +1,145 @@
+﻿@using SuiteShared.DAL.Models
+@using AuctionSite.DAL.Models
+@inject IUrlHelper urlHelper
+
+
+@model Auction
+@{
+    var imgs = new List<ImageViewModel>();
+    foreach (var imgRecord in Model.PropertyDocuments.Where(p => p.DocumentType == SuiteShared.DAL.Enums.DocumentType.Image))
+    {
+        imgs.Add(new ImageViewModel()
+        {
+            ImageUrl = UrlHelperExtensions.Action(urlHelper, "GetImage", "imgs", new { ImageId = imgRecord.Id }),
+            ImageThumbUrl = UrlHelperExtensions.Action(urlHelper, "GetImageThumb", "imgs", new { ImageId = imgRecord.Id }),
+        });
+    }
+}
+
+<div id="gallery-wrapper">
+
+    <div id="gallery" class="unselectable">
+        @foreach (var img in imgs)
+        {
+            <a href="#" image="@(img.ImageUrl)"
+               style="background-image: url(@(img.ImageThumbUrl))"></a>
+        }
+    </div>
+
+    <div class="gallery-display-wrapper unselectable">
+        <canvas id="display-img" height="400" width="400"
+                onwheel="mouseWheelZoom(event)"
+                onmouseover="mouseOverZoom(event)"
+                onmousemove="mouseMoveZoom(event.offsetX, event.offsetY)"
+                onmouseout="mouseOutZoom(event)"
+                style="background-image: url(@(imgs.First().ImageUrl))">
+
+        </canvas>
+        <canvas id="display-img-zoom" style="display: none;" height="400" width="400">
+
+        </canvas>
+    </div>
+
+    <div class="side-info-wrapper">
+        <h3>@Model.AuctionTitle</h3>
+        <h4 id="count-down" time="@(Model.AuctionCloses.ToString("MMM dd, yyyy HH:mm:ss"))"></h4>
+        <div class="location">
+            <strong>Location: </strong>
+            <a href="" id="@Model.Address" data-toggle="modal" onclick="map();" data-target="#mapModel">@Model.Address</a>
+        </div>
+
+        <table style="margin-top: 10px;">
+            <tr>
+                <td><span class="strong">Bids:</span></td>
+                <td>@Model.NumberOfBids</td>
+                <td><span class="strong">Min. Bid:</span></td>
+                <td>@Model.MinimumBid.ToString("C")</td>
+            </tr>
+            <tr>
+                <td><span class="strong">Current Bid:</span></td>
+                <td>@Model.CurrentBid.ToString("C")</td>
+                <td><span class="strong">Bid Increment:</span></td>
+                <td>@Model.BidIncrement.ToString("C")</td>
+            </tr>
+            <tr>
+                <td><span class="strong">State:</span></td>
+                <td>@Model.State</td>
+                <td><span class="strong">City:</span></td>
+                <td>@Model.City</td>
+            </tr>
+            <tr>
+                <td><span class="strong">County:</span></td>
+                <td>@Model.County</td>
+                <td><span class="strong">Lot size:</span></td>
+                <td>@Model.LotSize</td>
+            </tr>
+            <tr>
+                <td><span class="strong">Bedrooms:</span></td>
+                <td>@Model.NumberOfBedrooms</td>
+                <td><span class="strong">Bathrooms:</span></td>
+                <td>@Model.NumberOfBathrooms</td>
+            </tr>
+            <tr>
+                <td><span class="strong">Annual Tax:</span></td>
+                <td>@Model.AnnualTaxes.ToString("C")</td>
+                <td><span class="strong">Premium:</span></td>
+                <td>@(Model.BuyersPremium)%</td>
+            </tr>
+            <tr>
+                <td><span class="strong">HOA Fee:</span></td>
+                <td>@Model.HOAFee</td>
+                <td><span class="strong">Auction started:</span></td>
+                <td>@Model.AuctionStarts.ToString("g")</td>
+            </tr>
+            <tr>
+                <td><span class="strong">Deposit Required:</span></td>
+                <td>@Model.DepositRequired.ToString("C")</td>
+                <td><span class="strong">Reserve:</span></td>
+                <td>@Model.Reserve</td>
+            </tr>
+            <tr>
+                <td><span class="strong">Number of bids:</span></td>
+                <td>@Model.NumberOfBids</td>
+            </tr>
+        </table>
+
+        <br />
+        <!-- Modal -->
+        <div class="modal fade" id="mapModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="padding: 5px 5px 5px 5px">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Location</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <style>
+                            #map-div {
+                                height: 380px;
+                                width: 480px;
+                                background-color: #CCC;
+                            }
+                        </style>
+                        <div id="map-div" style="height: 400px; width: 500px;">
+                            <iframe id="mapframe" name="mapframe" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&q=NewYark" width="500" height="400" frameborder="0" style="border:0;" allowfullscreen=""></iframe>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="padding: 5px 5px 5px 5px">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<script>
+    function map() {
+        //var address = $(id).text();
+        var url = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyDBaJ4FbneVPdcGbUOrNgo6y0oI7GkN9Mk&q=' + @Model.Address;
+        
+        $("#mapframe").attr('src', url);
+    }
+</script>

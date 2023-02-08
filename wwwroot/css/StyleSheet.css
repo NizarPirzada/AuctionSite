@@ -1,0 +1,182 @@
+﻿
+body {
+    background: #eee;
+}
+#for_small_display{
+    margin-top:17%;
+}
+.navbar-toggle {
+    background-color: lightgray !important;
+}
+
+    .navbar-toggle .icon-bar {
+        background-color: black !important;
+    }
+
+.nav {
+    background: lightgrey;
+}
+.navbar-header {
+    padding-bottom: 10px;
+    background: white !important;
+}
+
+#video-background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 1;
+    width: 100%;
+}
+
+.jumbotron {
+    height: 50vw !important ;
+    position: relative;
+    overflow: hidden;
+}
+
+    .jumbotron .container {
+        position: relative;
+        z-index: 1;
+    }
+    .jumbotron h1 {
+        font-size: 6vw !important;
+        position: initial;
+        width: auto;
+        text-align: center;
+        margin-top: 33px;
+        color: white;
+    }
+
+.vid-header {
+    text-align: center;
+}
+
+    .vid-header h1 {
+        font-size: 6vw !important;
+    }
+
+
+.cta-btn:hover, .cta-btn:active, .cta-btn:focus {
+    background-color: #0d2740 !important;
+    color: #ff784f !important;
+}
+
+.cta-btn {
+    background-color: #174067 !important;
+    color: #ff784f !important;
+    font-weight: 500;
+}
+
+.f50 {
+    font-size: 50px !important;
+}
+
+.f40 {
+    text-align:center;
+    font-size: 4vw !important;
+    font-family: 'Rubik', sans-serif;
+}
+
+.f30 {
+    font-size: 5.5vw !important;
+    font-family: 'Yanone Kaffeesatz',sans-serif;
+    text-align: center;
+}
+
+.f80 {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 7vw !important;
+    font-family: 'Nunito', sans-serif;
+}
+p,li {
+    font-family: 'Yanone Kaffeesatz',sans-serif !important;
+}
+.big-number {
+    font-size: 14vw ;
+    font-weight: 900;
+    background: -webkit-linear-gradient(#1369bb, #0e0e0e);
+    font-family: cursive;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+blockquote{
+    margin-top:20px;
+    font-size:12px !important;
+}
+.img-circle{
+    margin-bottom:20px !important;
+}
+.ftr{
+    font-size:10px;
+    padding:0px !important;
+}
+.navbar-collapse {
+    background: lightgray !important;
+}
+
+.video-container {
+    margin-bottom: 10px;
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+}
+
+.video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+.w3-modal {
+padding-top:120px !important;
+}
+.w3-modal-content {
+
+    border-radius:5px !important;
+
+}
+.w3-container {
+    padding-top:4.01em !important;
+    padding-bottom:2.01em !important
+}
+
+
+.form-control {
+    background-color: rgba(0, 0, 0, 0.09) !important;
+}
+
+.form input {
+    border-radius: 3px;
+    border: none;
+    color: #333333;
+    font-size: 16px;
+    height: 46px;
+    margin-bottom: 5px;
+    padding: 13px 12px;
+    width: 100%;
+}
+
+.w3-display-topleft {
+margin-left:12px;
+font-weight:700;
+}
+.center{
+    text-align:center;
+}
+
+.mob-check {
+    margin-top:17%;
+}
+#education > .container{
+    margin-top:2%
+}
+.margin-contain {
+    margin-top: 15% !important;
+}
